@@ -52,7 +52,7 @@ module SimpleCaptcha #:nodoc
             ret = false
             self.class.instance_variable_get(:@add_to_base) == true ?
             self.errors.add_to_base(self.class.instance_variable_get(:@captcha_invalid_message)) :
-            self.errors.add(:captcha, self.class.instance_variable_get(:@captcha_invalid_message))
+            self.errors.add(:captcha, :incorrect)
           end
           simple_captcha_passed!(captcha_key) if ret
           return ret
