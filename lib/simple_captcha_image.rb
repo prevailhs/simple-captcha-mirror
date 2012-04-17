@@ -45,7 +45,7 @@ module SimpleCaptcha #:nodoc
     def append_simple_captcha_code #:nodoc      
       color = @simple_captcha_image_options[:color]
       text = Magick::Draw.new
-      text.annotate(@image, 0, 0, 0, 5, simple_captcha_value(@simple_captcha_image_options[:simple_captcha_key])) do
+      text.annotate(@image, 0, 0, 0, 5, @simple_captcha_image_options[:value]) do
         self.font_family = 'arial'
         self.pointsize = 22
         self.fill = color
@@ -90,12 +90,18 @@ module SimpleCaptcha #:nodoc
     end
 
     def generate_simple_captcha_image(options={})  #:nodoc
+      # Check to make sure that we can get the captcha value,
+      # otherwise this request is old and we should return nil so we know to report 404
+      value = simple_captcha_value(options[:simple_captcha_key])
+      return nil unless value
+
+      # We have a value so go ahead and generate an image
       @image = Magick::Image.new(110, 30) do 
         self.background_color = 'white'
         self.format = 'JPG'
       end
       @simple_captcha_image_options = {
-        :simple_captcha_key => options[:simple_captcha_key],
+        :value => value,
         :color => 'darkblue',
         :distortion => SimpleCaptcha::ImageHelpers.distortion(options[:distortion]),
         :image_style => SimpleCaptcha::ImageHelpers.image_style(options[:image_style])
